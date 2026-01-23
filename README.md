@@ -1,142 +1,414 @@
-# Credit Risk Scoring — MSME Portfolio
+\# Credit Risk Scoring — MSME Portfolio
 
-The project demonstrates the use of Python data‑science tools to build credit scoring models (Probability of Default, scorecard, and ensemble) for an MSME portfolio.
 
-Repository: siddharthajha26/Credit_Risk_Scoring_MSME_Project  
-Primary artifacts: Jupyter notebooks (Python_Code/) and datasets (Dataset/)
 
-Table of contents
-- About
-- Quick start
-- Repository structure
-- Dataset (files & brief evaluation)
-- Python_Code notebooks (purpose & run order)
-- Outputs & artifacts produced
-- Key model metrics (summary)
-- Limitations & assumptions
-- Reproducibility & governance
-- Suggested next steps
-- Contributing, license & contact
+\## 🚀 Executive Summary
 
-About
-This repository contains a step‑by‑step pipeline to prepare MSME loan data, engineer features, train/evaluate predictive models (XGBoost, logistic regression), produce a scorecard and combine predictions via an ensemble/meta‑learner. The work is organized as Jupyter notebooks to allow inspection of intermediate steps and results.
 
-Quick start
 
-1. Clone the repo
-   git clone https://github.com/siddharthajha26/Credit_Risk_Scoring_MSME_Project.git
+This repository presents an \*\*end-to-end Credit Risk Scoring framework for an MSME loan portfolio\*\*, built using \*\*Python and industry-standard statistical and machine learning techniques\*\*. The project mirrors \*\*real-world banking and consulting engagements\*\*, covering the full lifecycle from \*\*data preparation and feature engineering\*\* to \*\*PD modeling, calibration, validation, and ensemble learning\*\*, aligned with \*\*Basel / IFRS 9 expectations\*\*.
 
-2. Create and activate an environment (recommended)
-   - Using venv:
-     python -m venv .venv
-     source .venv/bin/activate    # macOS/Linux
-     .venv\Scripts\activate       # Windows
-   - Or using conda:
-     conda create -n msme-scoring python=3.9
-     conda activate msme-scoring
 
-3. Install dependencies
-   pip install -r requirements.txt
-   (If requirements.txt is not present, install core libs:)
-   pip install pandas numpy scikit-learn xgboost matplotlib seaborn openpyxl joblib
 
-4. Place Dataset files in Dataset/ (required)
-   - Dataset/MSME_data_file.csv
-   - Dataset/MSME_Data_Dictionary.xlsx
+\## 📌 Project Overview
 
-5. Recommended run order (notebooks assume prior state or saved artifacts)
-   - Python_Code/Part1_Data_prep_clean.ipynb
-   - Python_Code/Part2_DataSplit_Feature_Eng.ipynb
-   - Python_Code/Part3_CRM_MSME_XGBOOST.ipynb
-   - Python_Code/Part5_LR_Score_Calib.ipynb
-   - Python_Code/Part4_Model_Perform_validation.ipynb
-   - Python_Code/Part6_Meta_Learn_Ensemble.ipynb
 
-Repository structure (high level)
-- Dataset/
-  - MSME_data_file.csv — raw source CSV
-  - MSME_clean_trasformed.csv — cleaned + engineered dataset (used in modeling)
-  - MSME_Data_Dictionary.xlsx — column definitions and descriptions
-- Python_Code/
-  - Part1_Data_prep_clean.ipynb
-  - Part2_DataSplit_Feature_Eng.ipynb
-  - Part3_CRM_MSME_XGBOOST.ipynb
-  - Part4_Model_Perform_validation.ipynb
-  - Part5_LR_Score_Calib.ipynb
-  - Part6_Meta_Learn_Ensemble.ipynb
-  - .ipynb_checkpoints/
-- (recommended) artifacts/ (not present — suggested)
-  - models/, encoders/, score_maps/, figures/
 
-Dataset — brief evaluation
-- MSME_data_file.csv (raw)
-  - Contains date fields in dd.mm.yyyy style, many categorical fields (sector, purpose), numeric financial ratios, and target default_flag (0/1).
-  - Mixed formatting and placeholders found in some fields; missing values present.
-- MSME_clean_trasformed.csv
-  - Cleaned and feature-engineered dataset used in modeling. Includes many engineered columns (mean/WOE encodings, capped features).
-  - Useful as the canonical dataset for model training and evaluation.
-- MSME_Data_Dictionary.xlsx
-  - Contains definitions for original features. Confirm it includes engineered/derived columns for full auditability.
+This project demonstrates the use of \*\*Python and Machine Learning\*\* to build \*\*Credit Scoring models\*\* for an \*\*MSME (Micro, Small \& Medium Enterprise) loan portfolio\*\* using a \*\*synthetic dataset of 1,000 loans\*\*. The objective is to estimate \*\*Probability of Default (PD)\*\*, develop a \*\*logistic regression scorecard\*\*, and enhance predictive performance using \*\*advanced ML models and ensemble (meta-learning) techniques\*\*.
 
-Python_Code notebooks — purpose & notes
-- Part1_Data_prep_clean.ipynb
-  - Data ingestion, cleaning, date parsing, missing-value handling, initial transformations.
-  - Recommendation: produce a column-wise data quality summary and save cleaned dataset (Dataset/MSME_clean_trasformed.csv).
-- Part2_DataSplit_Feature_Eng.ipynb
-  - Feature engineering (mean encoding, WOE, capping), feature selection, and creation of train/validation/test splits (time-aware splits included).
-  - Recommendation: persist encoding maps and final feature list.
-- Part3_CRM_MSME_XGBOOST.ipynb
-  - Train XGBoost models, predict PD_xgboost, inspect feature importances.
-  - Recommendation: add hyperparameter tuning and model artifact persistence.
-- Part4_Model_Perform_validation.ipynb
-  - Calculate ROC/AUC, Gini, KS, temporal Gini by month, and validation plots.
-  - Recommendation: add calibration checks and sample-size guards on period metrics.
-- Part5_LR_Score_Calib.ipynb
-  - Build logistic regression scorecard, map PDs to scores with odds-to-score transformation and binning.
-  - Recommendation: clip PDs, smooth WOE, merge sparse bins to avoid unstable scores.
-- Part6_Meta_Learn_Ensemble.ipynb
-  - Combine PDs via average, weighted-average, and stacking (meta-learner). Handles missing PDs via indicators and imputation.
-  - Recommendation: persist meta model and OOF predictions for audit.
 
-Outputs & artifacts (what to expect)
-- Cleaned dataset: Dataset/MSME_clean_trasformed.csv
-- Trained model artifacts: (recommended) artifacts/models/xgb_model.pkl, lr_scorecard.pkl, meta_model.pkl
-- Encoders & mappings: (recommended) artifacts/encoders/mean_encoding_*.json, woe_maps.json
-- Score mapping tables (bins -> score)
-- Evaluation plots: ROC curves, calibration plots, Gini/month charts
 
-Key model metrics (reported in notebooks)
-- Reported AUCs across models ~ 0.94–0.96 (Gini ≈ 0.88–0.92) — promising but should be validated on holdout/back‑test.
-- Note: some monthly Gini values reach 1.0 (likely due to small sample sizes or separation); treat these as indicative, not definitive.
+The repository is designed as a \*\*step-by-step, inspection-friendly pipeline\*\*, closely aligned with \*\*banking industry practices under Basel / IFRS 9\*\*, and is suitable for \*\*credit risk modeling, validation, and analytics portfolios\*\*.
 
-Limitations & assumptions
-- Notebooks use %store and in-memory state between parts — fragile for automation. Convert to saved artifacts for robust runs.
-- Some PD predictions missing in validation sets (imputed later). Investigate root cause (feature mismatch or unseen categories).
-- Scorecard bins and WOE calculations can be unstable for sparse cells; smoothing and minimum cell sizes are recommended.
-- Data leakage risk must be assessed (ensure features are not derived using future information for a given split).
 
-Reproducibility & governance (recommended)
-- Add requirements.txt and optionally environment.yml
-- Persist:
-  - trained model files (joblib/pickle)
-  - encoder mappings (JSON/pickle)
-  - final feature list and schema (CSV/JSON)
-  - a MODEL_REGISTRY or artifacts/ directory with versions and metadata
-- Add a README cell at the top of each notebook describing inputs, outputs, and runtime.
 
-Suggested next steps
-1. Add requirements.txt and an environment specification.
-2. Convert the pipeline to a master notebook or python scripts to run end-to-end.
-3. Persist all encoders and model artifacts; add simple scoring script.
-4. Add model governance docs (see MDD) and a CHANGELOG.
-5. Add unit tests for key functions (scoring, gini calculation, master_scaling).
+\*\*Repository:\*\* `siddharthajha26/Credit\_Risk\_Scoring\_MSME\_Project`
 
-Contributing
-- Open to pull requests. Please follow repo conventions and include tests for new code.
 
-License
-- No LICENSE file in repo currently. Add an appropriate license (e.g., MIT) if you wish to open-source.
 
-Contact
-- Repository owner: @siddharthajha26
-- For questions or edits to these documents, reply here and I can prepare the files and optionally commit them to the repo with your approval.
+---
+
+
+
+\## ⭐ Key Takeaways
+
+
+
+\* Built and validated \*\*Probability of Default (PD) models\*\* for an MSME portfolio using Logistic Regression, Random Forest, and XGBoost
+
+\* Applied \*\*regulatory-aligned model calibration and validation\*\* techniques (Gini, AUROC, KS, PSI, HHI, Anchor Point tests)
+
+\* Demonstrated \*\*model interpretability\*\* using IV, SHAP, and scorecard concepts
+
+\* Enhanced predictive robustness through \*\*ensemble / meta-learning frameworks\*\*
+
+\* Designed the project with \*\*banking governance, auditability, and consulting use cases\*\* in mind
+
+
+
+---
+
+
+
+\## 🎯 Objectives
+
+
+
+\* Prepare and clean MSME loan-level data for credit risk modeling
+
+\* Engineer predictive and stable risk features
+
+\* Train and evaluate PD models using \*\*Logistic Regression, Random Forest, and XGBoost\*\*
+
+\* Build a \*\*scorecard-style PD model\*\*
+
+\* Perform \*\*model calibration, validation, and performance monitoring\*\*
+
+\* Combine model predictions using an \*\*ensemble / meta-learner\*\*
+
+
+
+---
+
+
+
+\## 🧱 Repository Structure (Master View)
+
+
+
+This repository is organized as a \*\*progressive modeling pipeline\*\*, where each notebook builds on the previous one:
+
+
+
+1\. \*\*Data Preparation \& EDA\*\* → `Part1\_Data\_prep\_clean.ipynb`
+
+2\. \*\*Feature Engineering \& Baseline PD Modeling\*\* → `Part2\_DataSplit\_Feature\_Eng.ipynb`
+
+3\. \*\*Advanced ML (XGBoost)\*\* → `Part3\_CRM\_MSME\_XGBOOST.ipynb`
+
+4\. \*\*PD Calibration (Regulatory View)\*\* → `Part4\_LR\_Score\_Calib.ipynb`
+
+5\. \*\*Model Validation \& Monitoring\*\* → `Part5\_Model\_Perform\_validation.ipynb`
+
+6\. \*\*Ensemble / Meta-Learning\*\* → `Par
+
+
+
+\### 📁 Dataset/
+
+
+
+\* \*\*MSME\_data\_file.csv\*\* — Raw MSME loan dataset
+
+\* \*\*MSME\_clean\_trasformed.csv\*\* — Cleaned \& feature-engineered dataset used for modeling
+
+\* \*\*MSME\_Data\_Dictionary.xlsx\*\* — Feature definitions and descriptions
+
+
+
+\### 📁 Python\_Code/ (Notebooks)
+
+
+
+\#### \*\*Part1\_Data\_prep\_clean.ipynb\*\*
+
+
+
+Covers end-to-end \*\*data preparation and exploratory analysis\*\*, including:
+
+
+
+\* Data import and preliminary inspection
+
+\* Missing value treatment
+
+\* Concentration analysis and correlation checks
+
+\* Outlier detection, skewness, kurtosis
+
+\* Variability, stability, and risk distribution analysis
+
+\* Standardization, normalization, and transformation techniques
+
+\* Preprocessing for downstream modeling
+
+
+
+---
+
+
+
+\#### \*\*Part2\_DataSplit\_Feature\_Eng.ipynb\*\*
+
+
+
+Focuses on \*\*feature engineering and baseline PD modeling\*\*:
+
+
+
+\* Train-test split and stratified sampling
+
+\* Validation set creation using cutoff-date logic
+
+\* Handling correlated features
+
+\* Information Value (IV) and Univariate Gini analysis
+
+\* Hazard rate modeling for PD estimation
+
+\* Logistic Regression PD modeling (train, test, validation)
+
+\* Confusion matrix, AUROC, Gini, classification report
+
+\* K-fold cross-validation (AUROC-based)
+
+\* Feature importance via Random Forest
+
+\* SHAP analysis (dependency plots, beeswarm plots) for interpretability
+
+
+
+---
+
+
+
+\#### \*\*Part3\_CRM\_MSME\_XGBOOST.ipynb\*\*
+
+
+
+Demonstrates \*\*tree-based ML modeling\*\* using XGBoost:
+
+
+
+\* PD prediction using gradient-boosted decision trees
+
+\* Feature importance interpretation (Weight, Gain, Cover)
+
+\* Hyperparameter tuning using Grid Search CV
+
+\* Performance comparison against baseline models
+
+
+
+---
+
+
+
+\#### \*\*Part4\_LR\_Score\_Calib.ipynb\*\*
+
+
+
+Dedicated to \*\*PD score calibration\*\* for Logistic Regression:
+
+
+
+\* Calibration assessment using log loss
+
+\* Probability diagnostics and calibration plots
+
+\* Alignment of predicted PDs with observed portfolio default rates
+
+\* Regulatory-relevant calibration concepts under \*\*Basel / IFRS 9\*\*
+
+
+
+---
+
+
+
+\#### \*\*Part5\_Model\_Perform\_validation.ipynb\*\*
+
+
+
+Covers \*\*model validation and performance monitoring\*\*, including:
+
+
+
+\* Gini, AUROC, ROC curve analysis
+
+\* KS statistic and score separation
+
+\* Confusion matrix and classification report on calibrated PDs
+
+\* Data drift detection using \*\*PSI and SSI\*\*
+
+\* Variance Inflation Factor (VIF) for multicollinearity
+
+\* Portfolio concentration analysis using \*\*HHI and Adjusted HHI\*\*
+
+\* Anchor Point testing (TTC to PIT PD comparison)
+
+\* Statistical tests: \*\*Chi-Squared, Binomial, Adjusted Binomial\*\*
+
+
+
+---
+
+
+
+\#### \*\*Part6\_Meta\_Learn\_Ensemble.ipynb\*\*
+
+
+
+Implements an \*\*ensemble (meta-learning) framework\*\*:
+
+
+
+\* Combining predictions from multiple base models
+
+\* Meta-learner construction
+
+\* Performance comparison vs individual models
+
+\* Improvement in ranking power and predictive robustness
+
+\* Practical application of ensemble learning in regulated banking environments
+
+
+
+---
+
+
+
+\## 📊 Dataset – Brief Evaluation
+
+
+
+\### MSME\_data\_file.csv (Raw)
+
+
+
+\* Date fields in `dd.mm.yyyy` format
+
+\* Mix of categorical (sector, purpose) and numerical financial ratios
+
+\* Target variable: `default\_flag` (0/1)
+
+\* Missing values and placeholders present
+
+
+
+\### MSME\_clean\_trasformed.csv
+
+
+
+\* Cleaned and feature-engineered modeling dataset
+
+\* Includes capped variables, encodings (mean / WOE), and derived features
+
+\* Used as the canonical dataset for training and evaluation
+
+
+
+\### MSME\_Data\_Dictionary.xlsx
+
+
+
+\* Definitions for original features
+
+\* Should be extended to include engineered variables for full auditability
+
+
+
+---
+
+
+
+\## 📈 Outputs \& Artifacts (Expected)
+
+
+
+\* Clean dataset: `Dataset/MSME\_clean\_trasformed.csv`
+
+\* Trained models (recommended):
+
+
+
+&nbsp; \* `artifacts/models/xgb\_model.pkl`
+
+&nbsp; \* `artifacts/models/lr\_scorecard.pkl`
+
+&nbsp; \* `artifacts/models/meta\_model.pkl`
+
+\* Encoders \& mappings:
+
+
+
+&nbsp; \* Mean / WOE encodings
+
+&nbsp; \* Score bin-to-point mappings
+
+\* Evaluation plots:
+
+
+
+&nbsp; \* ROC curves, calibration plots, Gini over time
+
+
+
+---
+
+
+
+\## 📌 Key Model Metrics
+
+
+
+\* Reported AUROC across models: \*\*~0.94 – 0.96\*\*
+
+\* Corresponding Gini: \*\*~0.88 – 0.92\*\*
+
+
+
+> ⚠️ Note: Some monthly Gini values reach 1.0 due to small sample sizes or separation effects and should be treated as \*\*indicative, not definitive\*\*.
+
+
+
+---
+
+
+
+\## ⚠️ Limitations \& Assumptions
+
+
+
+\* Notebooks rely on in-memory state (`%store`) — convert to persisted artifacts for production use
+
+\* Some PDs missing in validation sets (later imputed); root cause should be investigated
+
+\* WOE / scorecard bins may be unstable for sparse segments; smoothing is recommended
+
+\* Data leakage risk must be carefully reviewed for time-based splits
+
+
+
+---
+
+
+
+\## 🏦 Intended Audience
+
+
+
+\* Credit Risk \& Model Validation Analysts
+
+\* Risk Consulting Professionals
+
+\* Banking \& Financial Analytics Recruiters
+
+\* Aspiring Credit Risk Modelers building practical portfolios
+
+
+
+---
+
+
+
+\## 📘 Notes
+
+
+
+This repository is part of a broader \*\*Credit Risk Modeling \& Validation portfolio\*\*, covering the full lifecycle from \*\*data preparation to advanced ensemble modeling\*\*.
+
+
+
